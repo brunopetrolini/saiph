@@ -10,8 +10,42 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Customers {
+model Students {
   id String @id @default(uuid())
 
-  @@map("customers")
+  enrollments Enrollments[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  @@map("students")
+}
+
+model Courses {
+  id    String @default(uuid())
+  title String
+  slug  String @unique
+
+  enrolledOn Enrollments[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  @@map("courses")
+}
+
+model Enrollments {
+  id String @id @default(uuid())
+
+  student    Students @relation(fields: [studentsId], references: [id])
+  studentsId String
+
+  course      Courses @relation(fields: [coursesSlug], references: [slug])
+  coursesSlug String
+
+  canceledAt DateTime?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @default(now()) @updatedAt
+
+  @@map("enrollments")
 }
