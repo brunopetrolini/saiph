@@ -42,8 +42,8 @@ model Enrollments {
   student    Students @relation(fields: [studentsId], references: [id])
   studentsId String
 
-  course      Courses @relation(fields: [coursesSlug], references: [slug])
-  coursesSlug String
+  course   Courses @relation(fields: [courseId], references: [id])
+  courseId String
 
   canceledAt DateTime?
   createdAt  DateTime  @default(now())
