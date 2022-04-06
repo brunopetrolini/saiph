@@ -13,6 +13,8 @@ datasource db {
 model Students {
   id String @id @default(uuid())
 
+  authUserId String? @unique
+
   enrollments Enrollments[]
 
   createdAt DateTime @default(now())
