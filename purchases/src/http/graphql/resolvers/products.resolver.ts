@@ -11,15 +11,13 @@ export class ProductsResolver {
   constructor(private readonly productsService: ProductsService) {}
 
   @Query(() => [Product])
-  async products(): Promise<Product[]> {
+  async products() {
     return await this.productsService.listAllProducts();
   }
 
   @Mutation(() => Product)
   @UseGuards(AuthorizationGuard)
-  async createProduct(
-    @Args('data') data: CreateProductInput,
-  ): Promise<Product> {
+  async createProduct(@Args('data') data: CreateProductInput) {
     return await this.productsService.createProduct(data);
   }
 }
