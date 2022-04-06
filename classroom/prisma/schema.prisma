@@ -22,7 +22,7 @@ model Students {
 }
 
 model Courses {
-  id    String @default(uuid())
+  id    String @id @default(uuid())
   title String
   slug  String @unique
 
