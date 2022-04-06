@@ -10,6 +10,12 @@ import { Course } from '../models/course.model';
 export class CoursesResolver {
   constructor(private readonly coursesService: CoursesService) {}
 
+  @Query(() => Course)
+  @UseGuards(AuthorizationGuard)
+  async course(@Args('id') id: string) {
+    return await this.coursesService.getCourseById(id);
+  }
+
   @Query(() => [Course])
   @UseGuards(AuthorizationGuard)
   async courses() {
