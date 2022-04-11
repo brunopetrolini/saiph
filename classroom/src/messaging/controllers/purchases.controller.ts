@@ -4,30 +4,30 @@ import { CoursesService } from '../../services/courses.service';
 import { EnrollmentsService } from '../../services/enrollments.service';
 import { StudentsService } from '../../services/students.service';
 
-interface PurchaseCustomer {
+export interface Customer {
   authUserId: string;
 }
 
-interface PurchaseProduct {
+export interface Product {
   id: string;
   title: string;
   slug: string;
 }
 
-interface PurchaseCreatedPayload {
-  customer: PurchaseCustomer;
-  product: PurchaseProduct;
+export interface PurchaseCreatedPayload {
+  customer: Customer;
+  product: Product;
 }
 
 @Controller()
-export class PurchasesController {
+export class PurchaseController {
   constructor(
-    private readonly studentsService: StudentsService,
-    private readonly coursesService: CoursesService,
-    private readonly enrollmentsService: EnrollmentsService,
+    private studentsService: StudentsService,
+    private coursesService: CoursesService,
+    private enrollmentsService: EnrollmentsService,
   ) {}
 
-  @EventPattern('purchases.purchase-created')
+  @EventPattern('purchases.new-purchase')
   async purchaseCreated(@Payload('value') payload: PurchaseCreatedPayload) {
     let student = await this.studentsService.getStudentByAuthUserId(
       payload.customer.authUserId,

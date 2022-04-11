@@ -1,46 +1,55 @@
 import { Injectable } from '@nestjs/common';
 import slugify from 'slugify';
-
-import { PrismaService } from '../prisma/prisma.service';
+import { PrismaService } from '../database/prisma/prisma.service';
 
 interface CreateCourseParams {
-  title: string;
   slug?: string;
+  title: string;
 }
 
 @Injectable()
 export class CoursesService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) {}
 
-  async listAllCourses() {
-    return await this.prisma.courses.findMany();
+  listAllCourses() {
+    return this.prisma.course.findMany();
   }
 
-  async getCourseById(id: string) {
-    return await this.prisma.courses.findUnique({
-      where: { id },
+  getCourseById(id: string) {
+    return this.prisma.course.findUnique({
+      where: {
+        id,
+      },
     });
   }
 
-  async getCourseBySlug(slug: string) {
-    return await this.prisma.courses.findUnique({
-      where: { slug },
+  getCourseBySlug(slug: string) {
+    return this.prisma.course.findUnique({
+      where: {
+        slug,
+      },
     });
   }
 
-  async createCourse({ title, slug }: CreateCourseParams) {
-    const courseSlug = slug ?? slugify(title, { lower: true });
-
-    const course = await this.prisma.courses.findUnique({
-      where: { slug },
+  async createCourse({
+    title,
+    slug = slugify(title, { lower: true }),
+  }: CreateCourseParams) {
+    const courseAlreadyExists = await this.prisma.course.findUnique({
+      where: {
+        slug,
+      },
     });
 
-    if (!course) {
-      throw new Error('Course already exists.');
+    if (courseAlreadyExists) {
+      throw new Error('Course already exists');
     }
 
-    return this.prisma.courses.create({
-      data: { title, slug: courseSlug },
+    return this.prisma.course.create({
+      data: {
+        title,
+        slug,
+      },
     });
   }
 }

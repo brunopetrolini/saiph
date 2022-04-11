@@ -20,7 +20,7 @@ export class PrismaService
   }
 
   async onModuleDestroy() {
-    this.$disconnect();
+    await this.$disconnect();
   }
 
   async enableShutdownHooks(app: INestApplication) {

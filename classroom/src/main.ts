@@ -1,6 +1,5 @@
 import { NestFactory } from '@nestjs/core';
 import { MicroserviceOptions, Transport } from '@nestjs/microservices';
-
 import { AppModule } from './app.module';
 
 async function bootstrap() {
@@ -16,12 +15,13 @@ async function bootstrap() {
     },
   });
 
-  app
-    .startAllMicroservices()
-    .then(() => console.log('[Classroom] Microservice running'));
+  app.startAllMicroservices().then(() => {
+    console.log('[Classroom] Microservice running!');
+  });
 
-  await app
-    .listen(4000)
-    .then(() => console.log('[Classroom] HTTP server running'));
+  app.listen(3334).then(() => {
+    console.log('[Classroom] HTTP server running!');
+  });
 }
+
 bootstrap();
