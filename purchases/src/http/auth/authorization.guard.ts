@@ -1,5 +1,3 @@
-import { promisify } from 'node:util';
-
 import {
   CanActivate,
   ExecutionContext,
@@ -7,16 +5,17 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { GqlExecutionContext } from '@nestjs/graphql';
 import jwt from 'express-jwt';
 import { expressJwtSecret } from 'jwks-rsa';
-import { GqlExecutionContext } from '@nestjs/graphql';
+import { promisify } from 'node:util';
 
 @Injectable()
 export class AuthorizationGuard implements CanActivate {
   private AUTH0_AUDIENCE: string;
   private AUTH0_DOMAIN: string;
 
-  constructor(private readonly configService: ConfigService) {
+  constructor(private configService: ConfigService) {
     this.AUTH0_AUDIENCE = this.configService.get('AUTH0_AUDIENCE') ?? '';
     this.AUTH0_DOMAIN = this.configService.get('AUTH0_DOMAIN') ?? '';
   }
@@ -40,9 +39,10 @@ export class AuthorizationGuard implements CanActivate {
 
     try {
       await checkJWT(req, res);
+
       return true;
-    } catch (error) {
-      throw new UnauthorizedException(error);
+    } catch (err) {
+      throw new UnauthorizedException(err);
     }
   }
 }

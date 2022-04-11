@@ -7,30 +7,27 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Customers {
+model Customer {
   id String @id @default(uuid())
 
   authUserId String? @unique
 
-  purchases Purchases[]
+  purchases Purchase[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
-
-  @@map("customers")
 }
 
-model Products {
-  id    String @id @default(uuid())
+model Product {
+  id String @id @default(uuid())
+
   title String
   slug  String @unique
 
-  purchasedOn Purchases[]
+  purchasedOn Purchase[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
-
-  @@map("products")
 }
 
 enum PurchaseStatus {
@@ -39,19 +36,17 @@ enum PurchaseStatus {
   FAILED
 }
 
-model Purchases {
+model Purchase {
   id String @id @default(uuid())
 
   status PurchaseStatus @default(PENDING)
 
-  customer    Customers @relation(fields: [customersId], references: [id])
-  customersId String
+  customer   Customer @relation(fields: [customerId], references: [id])
+  customerId String
 
-  product    Products @relation(fields: [productsId], references: [id])
-  productsId String
+  product   Product @relation(fields: [productId], references: [id])
+  productId String
 
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
-
-  @@map("purchases")
 }

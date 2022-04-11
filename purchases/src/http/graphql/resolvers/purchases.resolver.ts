@@ -7,33 +7,32 @@ import {
   ResolveField,
   Resolver,
 } from '@nestjs/graphql';
-
 import { CustomersService } from '../../../services/customers.service';
 import { ProductsService } from '../../../services/products.service';
-import { AuthUser, CurrentUser } from '../../auth/current-user';
-import { AuthorizationGuard } from '../../../http/auth/authorization.guard';
+
 import { PurchasesService } from '../../../services/purchases.service';
-import { CreatePurchaseInput } from '../inputs/create-purchase.input';
-import { Product } from '../models/product.model';
-import { Purchase } from '../models/purchase.model';
+import { AuthorizationGuard } from '../../auth/authorization.guard';
+import { AuthUser, CurrentUser } from '../../auth/current-user';
+import { CreatePurchaseInput } from '../inputs/create-purchase-input';
+import { Purchase } from '../models/purchase';
 
 @Resolver(() => Purchase)
 export class PurchasesResolver {
   constructor(
-    private readonly purchasesService: PurchasesService,
-    private readonly productsService: ProductsService,
-    private readonly customersService: CustomersService,
+    private purchasesService: PurchasesService,
+    private productsService: ProductsService,
+    private customersService: CustomersService,
   ) {}
 
   @Query(() => [Purchase])
   @UseGuards(AuthorizationGuard)
-  async purchases() {
-    return await this.purchasesService.listAllPurchases();
+  purchases() {
+    return this.purchasesService.listAllPurchases();
   }
 
-  @ResolveField(() => Product)
-  async product(@Parent() purchase: Purchase) {
-    return await this.productsService.getProductById(purchase.productId);
+  @ResolveField()
+  product(@Parent() purchase: Purchase) {
+    return this.productsService.getProductById(purchase.productId);
   }
 
   @Mutation(() => Purchase)
@@ -52,9 +51,9 @@ export class PurchasesResolver {
       });
     }
 
-    return await this.purchasesService.createPurchase({
-      productId: data.productId,
+    return this.purchasesService.createPurchase({
       customerId: customer.id,
+      productId: data.productId,
     });
   }
 }
