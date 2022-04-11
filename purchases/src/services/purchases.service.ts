@@ -1,54 +1,59 @@
 import { Injectable } from '@nestjs/common';
+
+import { PrismaService } from '../database/prisma/prisma.service';
 import { KafkaService } from '../messaging/kafka.service';
 
-import { PrismaService } from '../prisma/prisma.service';
-
 interface CreatePurchaseParams {
-  productId: string;
   customerId: string;
+  productId: string;
 }
 
 @Injectable()
 export class PurchasesService {
-  constructor(
-    private readonly prisma: PrismaService,
-    private readonly kafka: KafkaService,
-  ) {}
+  constructor(private prisma: PrismaService, private kafka: KafkaService) {}
 
-  async listAllPurchases() {
-    return await this.prisma.purchases.findMany({
-      orderBy: { createdAt: 'desc' },
+  listAllPurchases() {
+    return this.prisma.purchase.findMany({
+      orderBy: {
+        createdAt: 'desc',
+      },
     });
   }
 
-  async listAllFromCustomer(customerId: string) {
-    return await this.prisma.purchases.findMany({
-      where: { customersId: customerId },
-      orderBy: { createdAt: 'desc' },
+  listAllFromCustomer(customerId: string) {
+    return this.prisma.purchase.findMany({
+      where: {
+        customerId,
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
     });
   }
 
-  async createPurchase({ productId, customerId }: CreatePurchaseParams) {
-    const product = await this.prisma.products.findUnique({
-      where: { id: productId },
+  async createPurchase({ customerId, productId }: CreatePurchaseParams) {
+    const product = await this.prisma.product.findUnique({
+      where: {
+        id: productId,
+      },
     });
 
     if (!product) {
       throw new Error('Product not found.');
     }
 
-    const purchase = await this.prisma.purchases.create({
+    const purchase = await this.prisma.purchase.create({
       data: {
-        customersId: customerId,
-        productsId: productId,
+        customerId,
+        productId,
       },
     });
 
-    const customer = await this.prisma.customers.findUnique({
+    const customer = await this.prisma.customer.findUnique({
       where: { id: customerId },
     });
 
-    this.kafka.emit('purchases.purchase-created', {
+    this.kafka.emit('purchases.new-purchase', {
       customer: {
         authUserId: customer.authUserId,
       },

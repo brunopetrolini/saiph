@@ -17,7 +17,7 @@ import { GraphQLModule } from '@nestjs/graphql';
         supergraphSdl: new IntrospectAndCompose({
           subgraphs: [
             { name: 'purchases', url: 'http://localhost:4001/graphql' },
-            { name: 'classroom', url: 'http://localhost:4000/graphql' },
+            { name: 'classroom', url: 'http://localhost:4002/graphql' },
           ],
         }),
         buildService: ({ url }) => {

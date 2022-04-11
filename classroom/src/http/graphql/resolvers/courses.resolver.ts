@@ -1,21 +1,26 @@
 import { UnauthorizedException, UseGuards } from '@nestjs/common';
-import { Resolver, Query, Mutation, Args } from '@nestjs/graphql';
+import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { CoursesService } from '../../../services/courses.service';
 import { EnrollmentsService } from '../../../services/enrollments.service';
 import { StudentsService } from '../../../services/students.service';
 import { AuthorizationGuard } from '../../auth/authorization.guard';
 import { AuthUser, CurrentUser } from '../../auth/current-user';
-import { CreateCourseInput } from '../inputs/create-course.input';
-
-import { Course } from '../models/course.model';
+import { CreateCourseInput } from '../inputs/create-course-input';
+import { Course } from '../models/course';
 
 @Resolver(() => Course)
 export class CoursesResolver {
   constructor(
-    private readonly coursesService: CoursesService,
-    private readonly studentsService: StudentsService,
-    private readonly enrollmentsService: EnrollmentsService,
+    private coursesService: CoursesService,
+    private studentsService: StudentsService,
+    private enrollmentsService: EnrollmentsService,
   ) {}
+
+  @Query(() => [Course])
+  @UseGuards(AuthorizationGuard)
+  courses() {
+    return this.coursesService.listAllCourses();
+  }
 
   @Query(() => Course)
   @UseGuards(AuthorizationGuard)
@@ -23,31 +28,24 @@ export class CoursesResolver {
     const student = await this.studentsService.getStudentByAuthUserId(user.sub);
 
     if (!student) {
-      throw new Error('Student not found.');
+      throw new Error('Student not found');
     }
 
-    const enrollment =
-      await this.enrollmentsService.getEnrollmentByCourseAndStudentId({
-        courseId: id,
-        studentId: student.id,
-      });
+    const enrollment = await this.enrollmentsService.getByCourseAndStudentId({
+      courseId: id,
+      studentId: student.id,
+    });
 
     if (!enrollment) {
       throw new UnauthorizedException();
     }
 
-    return await this.coursesService.getCourseById(id);
-  }
-
-  @Query(() => [Course])
-  @UseGuards(AuthorizationGuard)
-  async courses() {
-    return await this.coursesService.listAllCourses();
+    return this.coursesService.getCourseById(id);
   }
 
   @Mutation(() => Course)
   @UseGuards(AuthorizationGuard)
-  async createCourse(@Args('data') data: CreateCourseInput) {
+  createCourse(@Args('data') data: CreateCourseInput) {
     return this.coursesService.createCourse(data);
   }
 }
