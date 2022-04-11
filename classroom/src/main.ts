@@ -19,7 +19,7 @@ async function bootstrap() {
     console.log('[Classroom] Microservice running!');
   });
 
-  app.listen(3334).then(() => {
+  app.listen(4002).then(() => {
     console.log('[Classroom] HTTP server running!');
   });
 }
