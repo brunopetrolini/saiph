@@ -1,23 +1,23 @@
-import { ApolloClient, ApolloProvider, createHttpLink, InMemoryCache } from "@apollo/client";
+import { ApolloClient, ApolloProvider, createHttpLink, InMemoryCache, NormalizedCacheObject } from "@apollo/client";
 import { NextPage } from "next";
 
 export const withApollo = (Component: NextPage) => {
   return function Provider(props: any) {
     return (
-      <ApolloProvider client={getApolloClient()}>
+      <ApolloProvider client={getApolloClient(props.apolloState)}>
         <Component {...props} />
       </ApolloProvider>
     );
   }
 }
 
-function getApolloClient() {
+function getApolloClient(initialState?: NormalizedCacheObject) {
   const httpLink = createHttpLink({
     uri: 'http://localhost:4000/graphql',
     fetch
   })
 
-  const cache = new InMemoryCache();
+  const cache = new InMemoryCache().restore(initialState ?? {});
 
   return new ApolloClient({
     link: httpLink,
