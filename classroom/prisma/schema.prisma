@@ -16,6 +16,8 @@ model Student {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
+
+  @@map("student")
 }
 
 model Course {
@@ -28,6 +30,8 @@ model Course {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
+
+  @@map("course")
 }
 
 model Enrollment {
@@ -42,4 +46,6 @@ model Enrollment {
   canceledAt DateTime?
   createdAt  DateTime  @default(now())
   updatedAt  DateTime  @default(now()) @updatedAt
+
+  @@map("enrollment")
 }

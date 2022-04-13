@@ -16,6 +16,8 @@ model Customer {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
+
+  @@map("customer")
 }
 
 model Product {
@@ -28,6 +30,8 @@ model Product {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
+
+  @@map("product")
 }
 
 enum PurchaseStatus {
@@ -49,4 +53,6 @@ model Purchase {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
+
+  @@map("purchase")
 }
