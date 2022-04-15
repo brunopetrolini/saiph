@@ -1,4 +1,4 @@
-query getProducts {
+query GetProducts {
   products {
     id
     title
